@@ -1,0 +1,140 @@
+
+<div class="header">
+<input type="file" id="files" name="files[]" multiple />
+<p>X:<span id="x"></span></p>
+<p>Y:<span id="y"></span></p>
+<button id="init">Start</button>
+<p><textarea rows="4" cols="50" id="alltext"></textarea>
+</textarea></p>
+</div>
+<output id="list"></output>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+        $(window).scroll(function () {
+            if ($(window).scrollTop() > 0) {
+                $(".header").addClass("fixed");
+            } else {
+                $(".header").removeClass("fixed");
+            }
+        });
+    </script>
+    <style type="text/css">
+        .fixed {
+        position:fixed;
+        margin-left:auto; 
+        margin-right:0; 
+        background-color: #caa;      
+    }
+    </style>
+<script>
+  //var Alltext = "";
+  function handleFileSelect(evt) {
+    var files = evt.target.files; // FileList object
+
+    // Loop through the FileList and render image files as thumbnails.
+    for (var i = 0, f; f = files[i]; i++) {
+
+      var reader = new FileReader();
+      console.log("line_23");
+      
+
+      // Closure to capture the file information.
+      reader.onload = (function(theFile) {
+        return function(e) {
+          
+          var span = document.createElement('span');
+          span.innerHTML = ['</br><img class="thumb" src="', e.target.result,
+                            '" id="', escape(theFile.name).split(".")[0].split("+").join('_'), '"/><p>', escape(theFile.name), "</p>"].join('');
+
+          var button_1 = document.createElement('button');
+          var t = document.createTextNode("Next line");
+          button_1.appendChild(t);
+          button_1.setAttribute("class", "escape");
+          document.getElementById('list').insertBefore(button_1, null);
+
+
+          var button_2 = document.createElement('button');
+          var t2 = document.createTextNode(escape(theFile.name));
+          button_2.appendChild(t2);
+          button_2.setAttribute("id", escape(theFile.name).split(".")[0].split("+").join('-'));
+          button_2.setAttribute("class", "next_image");
+          document.getElementById('list').insertBefore(button_2, null);
+
+          document.getElementById('list').insertBefore(span, null);
+
+          
+
+        };
+      })(f);
+
+      // Read in the image file as a data URL.
+      reader.readAsDataURL(f);
+    }
+
+  }
+
+
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+
+  function find_images(e){
+
+    $('.escape').click(function(){
+      //$('#alltext').append("\n");;
+      document.getElementById("alltext").value += "\n";
+      //document.getElementById("alltext").value = Alltext;
+    });
+
+    var retval = $('.next_image').map(function(index,dom){return dom.id})
+    //console.log(retval);
+    var arrayLength = retval.length;
+    for (var i = 0; i < arrayLength; i++) {
+      console.log(retval[i]);
+
+      document.getElementById(retval[i]).addEventListener('click', function(){
+        //Alltext+= this.id + ":";
+        //document.getElementById("alltext").value = Alltext;
+        document.getElementById("alltext").value += this.id + ":";
+      });
+
+      // $('#'+retval[i]).click(function(){
+      // Alltext+= retval[i];
+      // document.getElementById("alltext").value = Alltext;
+      // });
+
+        //alert(myStringArray[i]);
+        //Do something
+    }
+            
+
+
+
+    var elem = document.getElementsByTagName('img');
+    //console.log(elem[0].id);
+    for(var i = 0; i < elem.length ; i++) {
+      // to open all photos in new tabs:
+      // window.open(allImages[i].src, '_blank');
+      //console.log(elem[i].id);
+      //var myImg = document.getElementById(elem[i].id);
+      console.log("line_55")
+      //elem[i].onclick = scopepreserver(elem[i].id);
+      $('#'+elem[i].id).click(function(e) {
+        var offset = $(this).offset();
+        // alert(e.pageX - offset.left);
+        // alert(e.pageY - offset.top);
+        console.log("line_74");
+        var xcoord = e.pageX - offset.left;
+        var ycoord = e.pageY - offset.top;
+        document.getElementById("x").innerHTML = xcoord;
+        document.getElementById("y").innerHTML = ycoord;
+        document.getElementById("alltext").value+= "("+ xcoord + "," + ycoord + "),";
+        //document.getElementById("alltext").value = Alltext;
+      });
+    };
+      
+
+  }
+
+  document.getElementById('init').addEventListener('click', find_images, false);
+
+</script>
